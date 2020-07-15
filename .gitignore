@@ -13,6 +13,18 @@
 *.out
 
 # Dependency directories
-aws/
-jmespath/
 pkg/
+aws/
+fsnotify/
+hashicorp/
+jmespath/
+magiconair/
+mitchellh/
+pelletier/
+spf13/
+subosito/
+golang.org/
+gopkg.in/
+
+# Secret files not to commit
+.env.*

@@ -8,7 +8,7 @@
 	// Set *default* container specific settings.json values on container create.
 	"settings": { 
 		"terminal.integrated.shell.linux": "/bin/bash",
-		"go.gopath": "/workspaces/cogo"
+		"go.gopath": "/workspaces/${localWorkspaceFolderBasename}"
 	},
 	
 	// Add the IDs of extensions you want installed when the container is created.
@@ -16,12 +16,12 @@
 		"golang.go"
 	],
 	"remoteEnv": {
-		"GOPATH": "/workspaces/cogo",
-		"PATH": "${containerEnv:PATH}:/workspaces/cogo/bin",
+		"GOPATH": "/workspaces/${localWorkspaceFolderBasename}",
+		"PATH": "${containerEnv:PATH}:/workspaces/${localWorkspaceFolderBasename}/bin",
 		"AWS_PROFILE": "geoplex-dev"
 	},
 	"mounts": [
-		"source=${localEnv:HOME}/.aws,target=/root/.aws,type=bind,consistency=cached"
+		"source=${localEnv:USERPROFILE}/.aws,target=/root/.aws,type=bind,consistency=cached"
 	]
 	
 
