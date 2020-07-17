@@ -13,18 +13,10 @@
 *.out
 
 # Dependency directories
+vendor/
 pkg/
-aws/
-fsnotify/
-hashicorp/
-jmespath/
-magiconair/
-mitchellh/
-pelletier/
-spf13/
-subosito/
-golang.org/
-gopkg.in/
+
+# project binaries
 src/github.com/unstableunicorn/cogo/cogo
 
 # Secret files not to commit
