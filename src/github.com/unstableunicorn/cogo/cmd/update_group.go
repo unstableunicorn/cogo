@@ -36,12 +36,13 @@ var updateGroupCmd = &cobra.Command{
 	Use:   "group",
 	Short: "Update an AWS cognito group",
 	Long: `Update an AWS Cognito group
-  Usages: 
+
+  Examples: 
   Basic use, update a group named 'mynewgroup'
-  cogo update group mynewgroupname -d "My updated description"
+  >cogo -p <poolid> update group mynewgroupname -d "My updated description"
 
   Update a group with description and precedence
-  cogo update group Group.Name -d "An updated group" --precedence 3 
+  >cogo -p <poolid> update group Group.Name -d "An updated group" --precedence 3 
   `,
 	Aliases: groupAliases,
 	Args: func(cmd *cobra.Command, args []string) error {

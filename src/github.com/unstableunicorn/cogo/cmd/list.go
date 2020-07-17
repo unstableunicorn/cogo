@@ -37,18 +37,18 @@ var listCmd = &cobra.Command{
 	Long: `Allows the user to list cognito users and groups
 and provide filters for searching.
 
-Usage: cogo list [group|user] [OPTIONS]
+Examples:
 List the first 60 users with all attributes:
->cogo list users
+>cogo -p <poolid> list users
 
 List all groups:
->cogo list groups --all
+>cogo -p <poolid> list groups --all
 
 List all users and only fetch the username and email fields:
->cogo list users --all --attribute username --attribute email
+>cogo -p <poolid> list users --all --attribute username --attribute email
 
 You can also combine attributes using a comma separated list:
->cogo list users --all --attr username,email,phone
+>cogo -p <poolid> list users --all --attr username,email,phone
 `,
 	Aliases: []string{"ls"},
 	Run: func(cmd *cobra.Command, args []string) {

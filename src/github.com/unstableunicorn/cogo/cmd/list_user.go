@@ -46,10 +46,10 @@ var listUserCmd = &cobra.Command{
 
   Filtering uses valid regex based on RE2 syntax, example:
   Return all users that have status CHANGE in the status field:
-  cogo list users -a --status "CHANGE"
+  cogo -p <poolid> list users -a --status "CHANGE"
 
   Return enabled users where their email has '@companyname':
-  cogo list users --fattr "@companyname" 
+  >cogo -p <poolid> list users --fattr "@companyname" 
      `,
 	PreRunE: func(cmd *cobra.Command, args []string) error {
 		if len(filterUserStatus) > 0 {

@@ -31,8 +31,8 @@ var updateCmd = &cobra.Command{
 	Short: "update cognito users or groups",
 	Long: `Allows the user to update cognito users and groups.
 
-Usage: cogo update [group|user] [OPTIONS]
->cogo update group mygroupname -d "A new description"
+  Examples:
+  >cogo -p <poolid> update group mygroupname -d "A new description"
 `,
 }
 

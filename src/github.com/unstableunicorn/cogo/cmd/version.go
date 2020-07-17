@@ -36,8 +36,8 @@ func init() {
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Print the version number of cogo",
-	Long:  `All software should have versions! Well this is cogo's`,
+	Short: "Print the version number of Cogo",
+	Long:  `All software should have versions! Well this is Cogo's`,
 	Run: func(cmd *cobra.Command, args []string) {
 		printVersion()
 	},

@@ -41,10 +41,10 @@ var listGroupCmd = &cobra.Command{
   
   Filtering uses valid regex based on RE2 syntax, example:
   Return all groups that have admin in the name:
-  cogo list groups -a -f "admin"
+  >cogo -p <poolid> list groups -a -f "admin"
   
   Return all groups that start with admin or Admin:
-  cogo list groups -a -f "^[aA]dmin"
+  >cogo -p <poolid> list groups -a -f "^[aA]dmin"
   `,
 	Aliases: groupAliases,
 	PreRunE: func(cmd *cobra.Command, args []string) error {

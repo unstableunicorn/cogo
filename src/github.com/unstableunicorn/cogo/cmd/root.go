@@ -48,25 +48,29 @@ var rootCmd = &cobra.Command{
   you to create, update, list and delete cognito users and groups including
   filtering and providing the ability to bulk update users.
   
-  Example Usages:
+  Examples:
   To list users:
-  >cogo list users
+  >cogo -p <poolid> list users
   
   To list groups:
-  >cogo list groups
+  >cogo -p <poolid> list groups
   
   To list users and only show certain attributes:
-  >cogo list users --attr username email status custom:somecustomattribute
+  >cogo -p <poolid> list users --attr username email status custom:somecustomattribute
   
   To create a user with sane defaults and add to existing groups:
-  >cogo add user first.last@organisation.com --groups grp1 grp2
+  >cogo -p <poolid> add user first.last@organisation.com --groups grp1 grp2
 
   Shortcuts! to make life easier you can use the following aliases:
   list|ls
   users|user|usr|u
   groups|group|grp|g
-  
-  e.g. cogo list users -> cogo ls u
+  e.g. cogo -p <poolid> list users -> cogo ls u
+
+  You can also enter the poolid anywhere on the command yay:
+  >cogo create user username -email -p <poolid>
+  >cogo create user -p <poolid> username -email   
+  >cogo create -p <poolid> user username -email   
   `,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		if !printVersionFlag && len(poolID) == 0 {

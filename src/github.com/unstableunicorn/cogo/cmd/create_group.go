@@ -36,13 +36,14 @@ var updateGroupIfExists bool
 var createGroupCmd = &cobra.Command{
 	Use:   "group",
 	Short: "Create an AWS Cognito group",
-	Long: `Create an AWS Cognito group
-  Usages: 
+	Long: `Create an AWS Cognito group.
+
+  Examples: 
   Basic use, create a group named 'mynewgroup'
-  cogo create group mynewgroupname
+  >cogo -p <poolid> create group mynewgroupname
 
   Create a group with description and precedence
-  cogo create group Group.Name -d "A group that does group things" --precedence 3 
+  >cogo -p <poolid> create group Group.Name -d "A group that does group things" --precedence 3 
   .`,
 	Aliases: groupAliases,
 	Args: func(cmd *cobra.Command, args []string) error {
