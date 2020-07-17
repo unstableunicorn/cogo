@@ -24,78 +24,76 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/unstableunicorn/cogo/lib"
-
 	cognito "github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
 	"github.com/spf13/cobra"
+	"github.com/unstableunicorn/cogo/lib"
 )
 
-var updateGroupIfExists bool
+var createGroupIfNotExists bool
 
-// createGroupCmd represents the group command
-var createGroupCmd = &cobra.Command{
+// groupCmd represents the group command
+var updateGroupCmd = &cobra.Command{
 	Use:   "group",
-	Short: "Create an AWS Cognito group",
-	Long: `Create an AWS Cognito group
+	Short: "Update an AWS cognito group",
+	Long: `Update an AWS Cognito group
   Usages: 
-  Basic use, create a group named 'mynewgroup'
-  cogo create group mynewgroupname
+  Basic use, update a group named 'mynewgroup'
+  cogo update group mynewgroupname -d "My updated description"
 
-  Create a group with description and precedence
-  cogo create group Group.Name -d "A group that does group things" --precedence 3 
-  .`,
+  Update a group with description and precedence
+  cogo update group Group.Name -d "An updated group" --precedence 3 
+  `,
 	Aliases: groupAliases,
 	Args: func(cmd *cobra.Command, args []string) error {
 		return checkArgs(cmd, args)
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		groupInput := createCreateGroupsInput(args[0])
-		createGroup(groupInput)
+		groupInput := createUpdateGroupInput(args[0])
+		updateGroup(groupInput)
 	},
 }
 
 func init() {
-	createCmd.AddCommand(createGroupCmd)
-
-	createGroupCmd.Flags().Int64Var(&precedence, "precedence", 0, "Group precedence")
-	createGroupCmd.Flags().StringVarP(&groupDescription, "description", "d", "", "Description of the group")
-	createGroupCmd.Flags().StringVarP(&roleArn, "role", "r", "", "Description of the group")
-	createGroupCmd.Flags().BoolVarP(&updateGroupIfExists, "update", "u", false, "If the group exists this will update the group")
+	updateCmd.AddCommand(updateGroupCmd)
+	updateGroupCmd.Flags().Int64Var(&precedence, "precedence", 0, "Group precedence")
+	updateGroupCmd.Flags().StringVarP(&groupDescription, "description", "d", "", "Description of the group")
+	updateGroupCmd.Flags().StringVarP(&roleArn, "role", "r", "", "Description of the group")
+	updateGroupCmd.Flags().BoolVarP(&createGroupIfNotExists, "create", "c", false, "If the group does not exists this will create the group")
 }
 
-func createCreateGroupsInput(groupName string) *cognito.CreateGroupInput {
-	createGroupsInput := &cognito.CreateGroupInput{
+func createUpdateGroupInput(groupName string) *cognito.UpdateGroupInput {
+	updateGroupsInput := &cognito.UpdateGroupInput{
 		UserPoolId: &poolID,
 		GroupName:  &groupName,
 	}
 
 	if len(groupDescription) > 0 {
-		createGroupsInput.Description = &groupDescription
+		updateGroupsInput.Description = &groupDescription
 	}
 
 	if len(roleArn) > 0 {
-		createGroupsInput.RoleArn = &roleArn
+		updateGroupsInput.RoleArn = &roleArn
 	}
 
 	if precedence != 0 {
-		createGroupsInput.Precedence = &precedence
+		updateGroupsInput.Precedence = &precedence
 	}
 
-	return createGroupsInput
+	return updateGroupsInput
 }
 
-func createGroup(groupInput *cognito.CreateGroupInput) {
-	group, err := cognitoSvc.CreateGroup(groupInput)
+func updateGroup(groupInput *cognito.UpdateGroupInput) {
+	updatedGroup, err := cognitoSvc.UpdateGroup(groupInput)
 
 	if err != nil {
-		// try and update the group
-		if updateGroupIfExists {
-			ug := cognito.UpdateGroupInput(*groupInput)
-			updateGroup(&ug)
+		if createGroupIfNotExists {
+			cg := cognito.CreateGroupInput(*groupInput)
+			createGroup(&cg)
 		} else {
-			lib.HandleAWSError("creating group", err)
+			lib.HandleAWSError("updating group", err)
 		}
+
 	} else {
-		fmt.Println(group.GoString())
+		fmt.Println(updatedGroup.GoString())
 	}
 }

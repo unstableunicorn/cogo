@@ -25,17 +25,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// createCmd represents the create command
-var createCmd = &cobra.Command{
-	Use:   "create",
-	Short: "create cognito users or groups",
-	Long: `Allows the user to create cognito users and groups.
+// updateCmd represents the update command
+var updateCmd = &cobra.Command{
+	Use:   "update",
+	Short: "update cognito users or groups",
+	Long: `Allows the user to update cognito users and groups.
 
-Usage: cogo create [group|user] [OPTIONS]
->cogo create user name
+Usage: cogo update [group|user] [OPTIONS]
+>cogo update group mygroupname -d "A new description"
 `,
 }
 
 func init() {
-	rootCmd.AddCommand(createCmd)
+	rootCmd.AddCommand(updateCmd)
 }

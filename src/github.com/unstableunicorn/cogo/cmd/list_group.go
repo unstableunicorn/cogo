@@ -23,10 +23,12 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"regexp"
 
 	cognito "github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
 	"github.com/spf13/cobra"
+	"github.com/unstableunicorn/cogo/lib"
 )
 
 var filterGroupList string
@@ -94,7 +96,7 @@ func listGroups() {
 		}
 
 		if err != nil {
-			fmt.Println("Error getting groups", err)
+			lib.HandleAWSError("listing groups", err)
 		}
 
 		if groups.NextToken == nil || !getall {
@@ -108,7 +110,8 @@ func listGroups() {
 		fmt.Println(groups.GoString())
 	} else {
 		if len(filterGroupList) > 0 {
-			fmt.Printf("No groups found matching filter: '%v'\n", filterGroupList)
+			errorString := fmt.Sprintf("No groups found matching filter: '%v'\n", filterGroupList)
+			log.Fatal(errorString)
 		} else {
 			fmt.Println("No groups found")
 		}

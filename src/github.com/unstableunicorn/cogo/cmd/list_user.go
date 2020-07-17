@@ -27,6 +27,8 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/unstableunicorn/cogo/lib"
+
 	cognito "github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
 	"github.com/spf13/cobra"
 )
@@ -40,7 +42,7 @@ var filterEnabledUsers bool
 var listUserCmd = &cobra.Command{
 	Use:   "user",
 	Short: "Returns a list of users",
-	Long: `Returns a list of user and provides additional filtering
+	Long: `Returns a list of users and provides additional filtering
 
   Filtering uses valid regex based on RE2 syntax, example:
   Return all users that have status CHANGE in the status field:
@@ -146,7 +148,7 @@ func listUsers() {
 		}
 
 		if err != nil {
-			fmt.Println("Error getting users", err)
+			lib.HandleAWSError("listing users", err)
 		}
 
 		if users.PaginationToken == nil || !getall {
