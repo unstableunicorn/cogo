@@ -1,4 +1,4 @@
-/*
+/*Package cmd functions for list user commands.
 Copyright © 2020 Elric Hindy <anunstableunicorn@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

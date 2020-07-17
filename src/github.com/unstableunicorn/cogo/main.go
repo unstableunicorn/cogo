@@ -21,7 +21,9 @@ THE SOFTWARE.
 */
 package main
 
-import "github.com/unstableunicorn/cogo/cmd"
+import (
+	"github.com/unstableunicorn/cogo/cmd"
+)
 
 func main() {
 	cmd.Execute()

@@ -1,4 +1,4 @@
-/*Package cmd functions for update commands.
+/*Package cmd version information functions
 Copyright © 2020 Elric Hindy <anunstableunicorn@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,20 +22,27 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
-// updateCmd represents the update command
-var updateCmd = &cobra.Command{
-	Use:   "update",
-	Short: "update cognito users or groups",
-	Long: `Allows the user to update cognito users and groups.
-
-Usage: cogo update [group|user] [OPTIONS]
->cogo update group mygroupname -d "A new description"
-`,
-}
+var version = "undefined"
+var printVersionFlag bool
 
 func init() {
-	rootCmd.AddCommand(updateCmd)
+	rootCmd.AddCommand(versionCmd)
+}
+
+var versionCmd = &cobra.Command{
+	Use:   "version",
+	Short: "Print the version number of cogo",
+	Long:  `All software should have versions! Well this is cogo's`,
+	Run: func(cmd *cobra.Command, args []string) {
+		printVersion()
+	},
+}
+
+func printVersion() {
+	fmt.Println("Cogo version: ", version)
 }

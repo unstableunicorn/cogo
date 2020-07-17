@@ -1,4 +1,4 @@
-/*
+/*Package cmd root functions.
 Copyright © 2020 Elric Hindy <anunstableunicorn@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,6 +22,7 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -67,6 +68,18 @@ var rootCmd = &cobra.Command{
   
   e.g. cogo list users -> cogo ls u
   `,
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		if !printVersionFlag && len(poolID) == 0 {
+			return errors.New(`Required flag(s) "poolid" not set`)
+		}
+
+		if printVersionFlag {
+			printVersion()
+			os.Exit(0)
+		}
+
+		return nil
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -80,9 +93,8 @@ func Execute() {
 
 func init() {
 	defer initCognito()
-
 	rootCmd.PersistentFlags().StringVarP(&poolID, "poolid", "p", "", "AWS Cognito User PoolID (required)")
-	rootCmd.MarkPersistentFlagRequired("poolid")
+	rootCmd.PersistentFlags().BoolVarP(&printVersionFlag, "version", "v", false, "Print the current version string")
 }
 
 func initCognito() {
