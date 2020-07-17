@@ -24,7 +24,7 @@ vet:
 
 lint:
 	@for file in ${GO_FILES} ;  do \
-		golint $$file ; \
+		golint -set_exit_status $$file ; \
 	done
 
 static: vet lint
