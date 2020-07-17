@@ -47,7 +47,7 @@ var createGroupCmd = &cobra.Command{
   .`,
 	Aliases: groupAliases,
 	Args: func(cmd *cobra.Command, args []string) error {
-		return checkArgs(cmd, args)
+		return checkGroupArgs(cmd, args)
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		groupInput := createCreateGroupsInput(args[0])

@@ -32,7 +32,7 @@ var precedence int64
 var roleArn string
 var groupDescription string
 
-func checkArgs(cmd *cobra.Command, args []string) error {
+func checkGroupArgs(cmd *cobra.Command, args []string) error {
 	if len(args) != 1 {
 		s := fmt.Sprintf("An single value is required for the group name, provided values: '%v'", args)
 		return errors.New(s)
