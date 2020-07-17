@@ -1,38 +1,57 @@
 /*
-Copyright © 2020 NAME HERE <EMAIL ADDRESS>
+Copyright © 2020 Elric Hindy <anunstableunicorn@gmail.com>
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-    http://www.apache.org/licenses/LICENSE-2.0
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
 */
 package cmd
 
 import (
 	"fmt"
+	"regexp"
 
 	cognito "github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
 	"github.com/spf13/cobra"
 )
 
+var filterGroupList string
+
 // listGroupCmd represents the group command
 var listGroupCmd = &cobra.Command{
 	Use:   "group",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Returns a list of groups",
+	Long: `Returns a list of groups and provides additional filtering
+  
+  Filtering uses valid regex based on RE2 syntax, example:
+  Return all groups that have admin in the name:
+  cogo list groups -a -f "admin"
+  
+  Return all groups that start with admin or Admin:
+  cogo list groups -a -f "^[aA]dmin"
+  `,
 	Aliases: groupAliases,
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		if len(filterGroupList) > 0 {
+			_, err := regexp.Compile(filterGroupList)
+			return err
+		}
+		return nil
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		listGroups()
 	},
@@ -40,37 +59,58 @@ to quickly create a Cobra application.`,
 
 func init() {
 	listCmd.AddCommand(listGroupCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// listGroupCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// listGroupCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	listGroupCmd.Flags().StringVarP(&filterGroupList, "filter", "f", "", "A regex compatible string for listing groups")
 }
 
 func listGroups() {
+	var matchGroupName *regexp.Regexp
+
+	if len(filterGroupList) > 0 {
+		matchGroupName = regexp.MustCompile(filterGroupList)
+	}
+
 	listGroupsInput := &cognito.ListGroupsInput{
 		Limit:      &limit,
 		UserPoolId: &poolID,
 	}
 
+	var groups cognito.ListGroupsOutput
 	for {
-		groups, err := cognitoSvc.ListGroups(listGroupsInput)
+		g, err := cognitoSvc.ListGroups(listGroupsInput)
+
+		if len(g.Groups) > 0 {
+			for _, v := range g.Groups {
+				// Run the filter here
+				if len(filterGroupList) > 0 {
+					// If no match go to the next one
+					if !matchGroupName.Match([]byte(*v.GroupName)) {
+						continue
+					}
+				}
+				groups.Groups = append(groups.Groups, v)
+			}
+		} else {
+			groups = *g
+		}
 
 		if err != nil {
 			fmt.Println("Error getting groups", err)
 		}
 
-		fmt.Println(groups.GoString())
-
-		if groups.NextToken == nil {
+		if groups.NextToken == nil || !getall {
 			break
 		}
 
-		listGroupsInput.NextToken = groups.NextToken
+		listGroupsInput.NextToken = g.NextToken
+	}
+
+	if len(groups.Groups) > 0 {
+		fmt.Println(groups.GoString())
+	} else {
+		if len(filterGroupList) > 0 {
+			fmt.Printf("No groups found matching filter: '%v'\n", filterGroupList)
+		} else {
+			fmt.Println("No groups found")
+		}
 	}
 }

@@ -25,6 +25,7 @@ spf13/
 subosito/
 golang.org/
 gopkg.in/
+src/github.com/unstableunicorn/cogo/cogo
 
 # Secret files not to commit
 .env.*

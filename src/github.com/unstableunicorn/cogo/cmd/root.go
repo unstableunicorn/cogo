@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 Elric Hindy
+Copyright © 2020 Elric Hindy <anunstableunicorn@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,6 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	cognito "github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
-	homedir "github.com/mitchellh/go-homedir"
-	"github.com/spf13/viper"
 )
 
 var cfgFile string
@@ -38,20 +36,37 @@ var poolID string
 var cognitoSvc *cognito.CognitoIdentityProvider
 
 var groupAliases = []string{"g", "grp", "groups"}
+var userAliases = []string{"u", "usr", "users"}
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "cogo",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Short: "Cogo is a small cli utility to manage cognito users and groups",
+	Long: `Usage: cogo [OPTIONS] [COMMAND]
+  Cogo (short for Cognito Go)  is a cli written in Go that allows
+  you to create, update, list and delete cognito users and groups including
+  filtering and providing the ability to bulk update users.
+  
+  Example Usages:
+  To list users:
+  >cogo list users
+  
+  To list groups:
+  >cogo list groups
+  
+  To list users and only show certain attributes:
+  >cogo list users --attr username email status custom:somecustomattribute
+  
+  To create a user with sane defaults and add to existing groups:
+  >cogo add user first.last@organisation.com --groups grp1 grp2
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
+  Shortcuts! to make life easier you can use the following aliases:
+  list|ls
+  users|user|usr|u
+  groups|group|grp|g
+  
+  e.g. cogo list users -> cogo ls u
+  `,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -65,18 +80,9 @@ func Execute() {
 
 func init() {
 	defer initCognito()
-	cobra.OnInitialize(initConfig)
 
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cogo.yaml)")
 	rootCmd.PersistentFlags().StringVarP(&poolID, "poolid", "p", "", "AWS Cognito User PoolID (required)")
 	rootCmd.MarkPersistentFlagRequired("poolid")
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 func initCognito() {
@@ -89,30 +95,4 @@ func initCognito() {
 	}
 
 	cognitoSvc = cognito.New(sess)
-}
-
-// initConfig reads in config file and ENV variables if set.
-func initConfig() {
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
-		// Find home directory.
-		home, err := homedir.Dir()
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-
-		// Search config in home directory with name ".cogo" (without extension).
-		viper.AddConfigPath(home)
-		viper.SetConfigName(".cogo")
-	}
-
-	viper.AutomaticEnv() // read in environment variables that match
-
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
-	}
 }
