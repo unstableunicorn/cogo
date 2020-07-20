@@ -37,18 +37,8 @@ jobs:
     - name: Build All
       run: make build
 
-    - name: Upload linux
+    - name: Upload Bin
       uses: actions/upload-artifact@v1
       with:
-        name: linux-bin
-        path: bin/cogo-linux*
-    - name: Upload darwin
-      uses: actions/upload-artifact@v1
-      with:
-        name: darwin-bin
-        path: bin/cogo-darwin*
-    - name: Upload windows
-      uses: actions/upload-artifact@v1
-      with:
-        name: windows-bin
-        path: bin/cogo-windows*
+        name: bin-files
+        path: bin/*
