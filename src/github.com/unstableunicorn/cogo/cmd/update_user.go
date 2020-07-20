@@ -45,7 +45,7 @@ var updateUserCmd = &cobra.Command{
 		return checkUserNameArg(args)
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		userInput := createUpdateUsersInput(args[0])
+		userInput := createUpdateUserInput(args[0])
 		updateUser(userInput)
 	},
 }
@@ -56,9 +56,10 @@ func init() {
 	updateUserCmd.Flags().StringSliceVar(&clientMetadata, "clientmetadata", []string{}, "Comma separated list of client metadata e.g Key=Value[,Key2=Value2]")
 	updateUserCmd.Flags().StringSliceVar(&userAttributes, "attributes", []string{}, `Comma separated list of user attributes e.g Key=Value[,Key2=Value2]
  This is where the email is set. See usage`)
+	updateUserCmd.Flags().StringSliceVarP(&userGroups, "groups", "g", []string{}, "Add groups to the user as comma separated list")
 }
 
-func createUpdateUsersInput(userName string) *cognito.AdminUpdateUserAttributesInput {
+func createUpdateUserInput(userName string) *cognito.AdminUpdateUserAttributesInput {
 	updateUserInput := &cognito.AdminUpdateUserAttributesInput{
 		UserPoolId: &poolID,
 		Username:   &userName,
@@ -83,8 +84,14 @@ func updateUser(userInput *cognito.AdminUpdateUserAttributesInput) {
 	_, err := cognitoSvc.AdminUpdateUserAttributes(userInput)
 
 	if err != nil {
-		lib.HandleAWSError("creating user", err, true)
-	} else {
-		fmt.Println("Successfully updated user", *userInput.Username)
+		lib.HandleAWSError("updating user", err, true)
 	}
+
+	if len(userGroups) > 0 {
+		for _, group := range userGroups {
+			addUserToGroup(*userInput.Username, group)
+		}
+	}
+
+	fmt.Println("Successfully updated user", *userInput.Username)
 }

@@ -6,10 +6,12 @@ import (
 	"strings"
 
 	cognito "github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
+	"github.com/unstableunicorn/cogo/lib"
 )
 
 var clientMetadata []string
 var userAttributes []string
+var userGroups []string
 
 func mapClientMetadata(cm []string) map[string]*string {
 	// Generate the mapped attributes
@@ -51,4 +53,18 @@ func mapUserAttributes(ua []string) []*cognito.AttributeType {
 		}
 	}
 	return mappedUserAttributes
+}
+
+func addUserToGroup(userName string, groupName string) {
+	addUserToGroupInput := &cognito.AdminAddUserToGroupInput{
+		UserPoolId: &poolID,
+		Username:   &userName,
+		GroupName:  &groupName,
+	}
+
+	_, err := cognitoSvc.AdminAddUserToGroup(addUserToGroupInput)
+
+	if err != nil {
+		lib.HandleAWSError("adding user to group", err, true)
+	}
 }
