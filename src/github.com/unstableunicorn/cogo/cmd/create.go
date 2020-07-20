@@ -35,6 +35,7 @@ var createCmd = &cobra.Command{
   >cogo -p <poolid> create group MyGroupName
   >cogo -p <poolid> create group MyGroupName --details "My Group Is AWSome" --precedence
 `,
+	Aliases: []string{"add"},
 }
 
 func init() {

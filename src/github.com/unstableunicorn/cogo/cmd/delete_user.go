@@ -1,4 +1,4 @@
-/*Package cmd version information functions
+/*Package cmd functions for delete user commands.
 Copyright © 2020 Elric Hindy <anunstableunicorn@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,27 +22,51 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"errors"
 	"fmt"
 
+	"github.com/unstableunicorn/cogo/lib"
+
+	cognito "github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
 	"github.com/spf13/cobra"
 )
 
-var version = "undefined"
-var printVersionFlag bool
+// deleteUserCmd represents the user command
+var deleteUserCmd = &cobra.Command{
+	Use:   "user",
+	Short: "Delete an AWS Cognito user",
+	Long: `Delete an AWS Cognito user, takes the user name
+  as an input.
 
-func init() {
-	rootCmd.AddCommand(versionCmd)
-}
-
-var versionCmd = &cobra.Command{
-	Use:   "version",
-	Short: "Print the version number of Cogo",
-	Long:  `All software should have versions! Well this is Cogo's`,
+  Example:
+  >cogo -p <poolid> delete user Username`,
+	Aliases: userAliases,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) != 1 {
+			s := fmt.Sprintf("An single value is required for the user name, provided values: '%v'", args)
+			return errors.New(s)
+		}
+		return nil
+	},
 	Run: func(cmd *cobra.Command, args []string) {
-		printVersion()
+		deleteUser(args[0])
 	},
 }
 
-func printVersion() {
-	fmt.Println("Cogo version: ", version)
+func init() {
+	deleteCmd.AddCommand(deleteUserCmd)
+}
+
+func deleteUser(username string) {
+	deleteUserInput := &cognito.AdminDeleteUserInput{
+		UserPoolId: &poolID,
+		Username:   &username,
+	}
+
+	_, err := cognitoSvc.AdminDeleteUser(deleteUserInput)
+	if err != nil {
+		lib.HandleAWSError("deleting user", err)
+	} else {
+		fmt.Println("Successfully deleted: ", username)
+	}
 }

@@ -22,7 +22,6 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"os"
 
@@ -35,6 +34,7 @@ import (
 var cfgFile string
 var poolID string
 var cognitoSvc *cognito.CognitoIdentityProvider
+var version = "developement.version"
 
 var groupAliases = []string{"g", "grp", "groups"}
 var userAliases = []string{"u", "usr", "users"}
@@ -72,18 +72,7 @@ var rootCmd = &cobra.Command{
   >cogo create user -p <poolid> username -email   
   >cogo create -p <poolid> user username -email   
   `,
-	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		if !printVersionFlag && len(poolID) == 0 {
-			return errors.New(`Required flag(s) "poolid" not set`)
-		}
-
-		if printVersionFlag {
-			printVersion()
-			os.Exit(0)
-		}
-
-		return nil
-	},
+	Version: version,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -98,7 +87,7 @@ func Execute() {
 func init() {
 	defer initCognito()
 	rootCmd.PersistentFlags().StringVarP(&poolID, "poolid", "p", "", "AWS Cognito User PoolID (required)")
-	rootCmd.PersistentFlags().BoolVarP(&printVersionFlag, "version", "v", false, "Print the current version string")
+	rootCmd.MarkPersistentFlagRequired("poolid")
 }
 
 func initCognito() {
