@@ -24,8 +24,6 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"log"
-	"strings"
 
 	"github.com/unstableunicorn/cogo/lib"
 
@@ -33,9 +31,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var clientMetadata []string
 var deliveryMedium []string
-var userAttributes []string
 var tempPassword string
 
 var suppress bool
@@ -49,11 +45,11 @@ var createUserCmd = &cobra.Command{
 	Long: `Create an AWS Cognito user.
 
   Examples: 
-  Basic use, create a user named ''
-  >cogo -p <poolid> create user mynewusername
+  Basic use, create a user named user1
+  >cogo -p <poolid> create user user1
 
   Create a user with description and precedence
-  >cogo -p <poolid> create user User.Name -d "A user that does user things" --precedence 3 
+  >cogo -p <poolid> create user User.Name -d "A user that does user things"
   .`,
 	Aliases: userAliases,
 	Args: func(cmd *cobra.Command, args []string) error {
@@ -79,10 +75,18 @@ func init() {
 	createUserCmd.Flags().BoolVar(&generatePasswordFlag, "autopassword", false, "Auto generate a password for the user")
 }
 
-func checkUserArgs(cmd *cobra.Command, args []string) error {
+func checkUserNameArg(args []string) error {
 	if len(args) != 1 {
 		s := fmt.Sprintf("An single value is required for the user name, provided values: '%v'", args)
 		return errors.New(s)
+	}
+	return nil
+}
+
+func checkUserArgs(cmd *cobra.Command, args []string) error {
+	hasUserError := checkUserNameArg(args)
+	if hasUserError != nil {
+		return hasUserError
 	}
 
 	if len(tempPassword) > 0 {
@@ -113,26 +117,16 @@ func checkUserArgs(cmd *cobra.Command, args []string) error {
 }
 
 func createCreateUsersInput(userName string) *cognito.AdminCreateUserInput {
-	// Generate the mapped attributes
-	mappedClientMetadata := make(map[string]*string)
-	if len(clientMetadata) > 0 {
-		for _, a := range clientMetadata {
-			values := strings.Split(a, "=")
-			if len(values) != 2 {
-				errorString := fmt.Sprintf("Invalid client metadata %v \n", a)
-				log.Fatal(errorString)
-			}
-			mappedClientMetadata[values[0]] = &values[1]
-		}
-	}
-
 	createUsersInput := &cognito.AdminCreateUserInput{
 		UserPoolId: &poolID,
 		Username:   &userName,
 	}
 
+	// Generate the mapped attributes
+	mappedClientMetadata := mapClientMetadata(clientMetadata)
+
 	if len(mappedClientMetadata) > 0 {
-		createUsersInput.ClientMetadata = mappedClientMetadata
+		createUsersInput.SetClientMetadata(mappedClientMetadata)
 	}
 
 	if len(deliveryMedium) > 0 {
@@ -140,7 +134,7 @@ func createCreateUsersInput(userName string) *cognito.AdminCreateUserInput {
 		for _, v := range deliveryMedium {
 			dm = append(dm, &v)
 		}
-		createUsersInput.DesiredDeliveryMediums = dm
+		createUsersInput.SetDesiredDeliveryMediums(dm)
 	}
 
 	if updateUserIfExists {
@@ -148,24 +142,12 @@ func createCreateUsersInput(userName string) *cognito.AdminCreateUserInput {
 		if suppress {
 			action = cognito.MessageActionTypeSuppress
 		}
-		createUsersInput.MessageAction = &action
+		createUsersInput.SetMessageAction(action)
 	}
 
-	var mappedUserAttributes []*cognito.AttributeType
-	if len(userAttributes) > 0 {
-		for _, a := range userAttributes {
-			values := strings.Split(a, "=")
-			if len(values) != 2 {
-				errorString := fmt.Sprintf("Invalid user attributes %v \n", a)
-				log.Fatal(errorString)
-			}
-			attrib := cognito.AttributeType{
-				Name:  &values[0],
-				Value: &values[1],
-			}
-			mappedUserAttributes = append(mappedUserAttributes, &attrib)
-		}
-		createUsersInput.UserAttributes = mappedUserAttributes
+	mappedUserAttributes := mapUserAttributes(userAttributes)
+	if len(mappedUserAttributes) > 0 {
+		createUsersInput.SetUserAttributes(mappedUserAttributes)
 	}
 
 	return createUsersInput
