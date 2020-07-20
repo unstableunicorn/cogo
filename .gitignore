@@ -17,7 +17,7 @@ vendor/
 pkg/
 
 # project binaries
-src/github.com/unstableunicorn/cogo/cogo
+cogo
 
 # Secret files not to commit
 .env.*

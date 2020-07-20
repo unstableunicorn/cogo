@@ -1,0 +1,7 @@
+.devcontainer/
+.github/
+.env*
+.gitignore
+bin/
+pkg/
+vendor/
