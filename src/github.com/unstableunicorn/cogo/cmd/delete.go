@@ -33,17 +33,17 @@ var stopDeleteOnError bool
 var deleteCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "Delete cognito users or groups",
-	Long: `Allows the user to delete cognito users and groups
+	Long: `Allows the user to delete cognito users and groups.
 	
-	Examples:
-	Delete a user:
-	>cogo -p <poolid> delete user Username
+  Examples:
+  Delete a user:
+  >cogo -p <poolid> delete user Username
 
-	Delete a group:
-	>cogo -p <poolid> delete group Groupname
+  Delete a group:
+  >cogo -p <poolid> delete group Groupname
 	
-	Delete multiple users and fail on first error:
-	>cogo -p <poolid> delete user -e user1name user2name`,
+  Delete multiple users and fail on first error:
+  >cogo -p <poolid> delete user -e user1name user2name`,
 
 	Aliases: []string{"del", "remove", "rem"},
 	Run: func(cmd *cobra.Command, args []string) {

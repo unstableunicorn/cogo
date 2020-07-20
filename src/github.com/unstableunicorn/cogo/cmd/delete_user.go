@@ -40,7 +40,7 @@ var deleteUserCmd = &cobra.Command{
 
   Example:
   Delete one user:
-  >cogo -p <poolid> delete user Username
+  >cogo -p <poolid> delete user user1
 
   Delete multiple users:
   >cogo -p <poolid> delete user user1name user2name

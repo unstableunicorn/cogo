@@ -48,8 +48,8 @@ var createUserCmd = &cobra.Command{
   Basic use, create a user named user1
   >cogo -p <poolid> create user user1
 
-  Create a user with description and precedence
-  >cogo -p <poolid> create user User.Name -d "A user that does user things"
+  Create a user with verified email and set password
+  >cogo -p <poolid> create user user1 --password SuperSecretPassword --attributes "email=user1@company.com,email_verified=true"
   .`,
 	Aliases: userAliases,
 	Args: func(cmd *cobra.Command, args []string) error {

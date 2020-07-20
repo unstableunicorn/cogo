@@ -28,12 +28,15 @@ import (
 // createCmd represents the create command
 var createCmd = &cobra.Command{
 	Use:   "create",
-	Short: "create cognito users or groups",
+	Short: "Create cognito users or groups",
 	Long: `Allows the user to create cognito users and groups.
-
+	
   Examples:
-  >cogo -p <poolid> create group MyGroupName
-  >cogo -p <poolid> create group MyGroupName --details "My Group Is AWSome" --precedence
+  Create a user:
+  >cogo -p <poolid> create user user1 --attributes "email=user1@company.com,phone_number=+1234567890"
+
+  Create a group:
+  >cogo -p <poolid> create group groupname --description "My group" --precedence 3
 `,
 	Aliases: []string{"add"},
 }
