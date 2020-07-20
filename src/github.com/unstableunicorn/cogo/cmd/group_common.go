@@ -25,7 +25,9 @@ import (
 	"errors"
 	"fmt"
 
+	cognito "github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
 	"github.com/spf13/cobra"
+	"github.com/unstableunicorn/cogo/lib"
 )
 
 var precedence int64
@@ -46,4 +48,37 @@ func checkGroupArgs(cmd *cobra.Command, args []string) error {
 		return errors.New("RoleArn must be greater than 20 characters")
 	}
 	return nil
+}
+
+func getUsersInGroup(groupName string) cognito.ListUsersInGroupOutput {
+	listUsersInGroupInput := &cognito.ListUsersInGroupInput{
+		UserPoolId: &poolID,
+		GroupName:  &groupName,
+		Limit:      &limit,
+	}
+
+	var users cognito.ListUsersInGroupOutput
+	for {
+		u, err := cognitoSvc.ListUsersInGroup(listUsersInGroupInput)
+
+		if len(u.Users) > 0 {
+			for _, v := range u.Users {
+				users.SetUsers(append(users.Users, v))
+			}
+		} else {
+			users = *u
+		}
+
+		if err != nil {
+			lib.HandleAWSError("listing users in group", err, true)
+		}
+
+		if u.NextToken == nil {
+			break
+		}
+
+		listUsersInGroupInput.SetNextToken(*u.NextToken)
+	}
+
+	return users
 }

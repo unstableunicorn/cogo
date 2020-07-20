@@ -68,3 +68,36 @@ func addUserToGroup(userName string, groupName string) {
 		lib.HandleAWSError("adding user to group", err, true)
 	}
 }
+
+func getGroupsInUser(userName string) cognito.AdminListGroupsForUserOutput {
+	listGroupsInUserInput := &cognito.AdminListGroupsForUserInput{
+		UserPoolId: &poolID,
+		Username:   &userName,
+		Limit:      &limit,
+	}
+
+	var groups cognito.AdminListGroupsForUserOutput
+	for {
+		g, err := cognitoSvc.AdminListGroupsForUser(listGroupsInUserInput)
+
+		if len(g.Groups) > 0 {
+			for _, v := range g.Groups {
+				groups.SetGroups(append(groups.Groups, v))
+			}
+		} else {
+			groups = *g
+		}
+
+		if err != nil {
+			lib.HandleAWSError("listing groups in user", err, true)
+		}
+
+		if g.NextToken == nil {
+			break
+		}
+
+		listGroupsInUserInput.SetNextToken(*g.NextToken)
+	}
+
+	return groups
+}

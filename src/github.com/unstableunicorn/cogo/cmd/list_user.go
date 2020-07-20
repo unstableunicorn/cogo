@@ -37,6 +37,7 @@ var listUserAttributes []string
 var filterUserAttributes []string
 var filterUserStatus string
 var filterEnabledUsers bool
+var showGroupsInUser bool
 
 // userCmd represents the user command
 var listUserCmd = &cobra.Command{
@@ -72,6 +73,7 @@ func init() {
 	listUserCmd.Flags().StringVar(&filterUserStatus, "status", "", "Return users with status that matches filter provided")
 	listUserCmd.Flags().BoolVar(&filterEnabledUsers, "enabled", true, `Return users who are enabled, ignored if --all flag is set`)
 	listUserCmd.Flags().StringSliceVar(&filterUserAttributes, "fattr", []string{}, "Key Value attribute pairs to filter in Key=Value[,Key2=Value2]")
+	listUserCmd.Flags().BoolVarP(&showGroupsInUser, "showgroups", "g", false, "Show groups that the user belongs to")
 }
 
 func listUsers() {
@@ -159,7 +161,26 @@ func listUsers() {
 	}
 
 	if len(users.Users) > 0 {
-		fmt.Println(users.GoString())
+		if showGroupsInUser {
+			var groupsInUser cognito.AdminListGroupsForUserOutput
+			var groups []string
+			// Some formatting to get a nice list of just the name
+			for _, u := range users.Users {
+				groupsInUser = getGroupsInUser(*u.Username)
+				for _, g := range groupsInUser.Groups {
+					groups = append(groups, *g.GroupName)
+				}
+				fmt.Println(u)
+				if len(groups) > 0 {
+					fmt.Println("Groups in User: ", strings.Join(groups, ", "))
+				} else {
+					fmt.Println("No users in group")
+				}
+				groups = nil
+			}
+		} else {
+			fmt.Println(users.GoString())
+		}
 	} else {
 		fmt.Println("No users found matching provided arguments")
 	}

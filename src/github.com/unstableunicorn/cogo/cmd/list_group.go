@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"log"
 	"regexp"
+	"strings"
 
 	cognito "github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
 	"github.com/spf13/cobra"
@@ -32,6 +33,7 @@ import (
 )
 
 var filterGroupList string
+var showUsersInGroup bool
 
 // listGroupCmd represents the group command
 var listGroupCmd = &cobra.Command{
@@ -62,6 +64,7 @@ var listGroupCmd = &cobra.Command{
 func init() {
 	listCmd.AddCommand(listGroupCmd)
 	listGroupCmd.Flags().StringVarP(&filterGroupList, "filter", "f", "", "A regex compatible string for listing groups")
+	listGroupCmd.Flags().BoolVarP(&showUsersInGroup, "showusers", "u", false, "Show users in each group")
 }
 
 func listGroups() {
@@ -107,7 +110,27 @@ func listGroups() {
 	}
 
 	if len(groups.Groups) > 0 {
-		fmt.Println(groups.GoString())
+		if showUsersInGroup {
+			var usersInGroup cognito.ListUsersInGroupOutput
+			var users []string
+			// Some formatting to get a nice list of just the name
+			for _, g := range groups.Groups {
+				usersInGroup = getUsersInGroup(*g.GroupName)
+				for _, u := range usersInGroup.Users {
+					users = append(users, *u.Username)
+				}
+				fmt.Println(g)
+				if len(users) > 0 {
+					fmt.Println("Users in group: ", strings.Join(users, ", "))
+				} else {
+					fmt.Println("No users in group")
+				}
+				users = nil
+			}
+		} else {
+			fmt.Println(groups.GoString())
+		}
+
 	} else {
 		if len(filterGroupList) > 0 {
 			errorString := fmt.Sprintf("No groups found matching filter: '%v'\n", filterGroupList)
