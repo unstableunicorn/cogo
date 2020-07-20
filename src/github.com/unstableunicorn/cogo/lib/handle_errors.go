@@ -28,14 +28,18 @@ import (
 )
 
 // HandleAWSError strips and logs strings good format
-func HandleAWSError(action string, err error) {
-	extractedError := strings.Split(err.Error(), ":")
-	errorString := fmt.Sprintf("Error %v,%v", action, extractedError[1])
-	log.Fatal(errorString)
+func HandleAWSError(action string, err error, stopOnError bool) {
+	_, extractedError := GetAWSError(err)
+	errorString := fmt.Sprintf("Error %v,%v\n", action, extractedError)
+	if stopOnError {
+		log.Fatal(errorString)
+	} else {
+		log.Print(errorString)
+	}
 }
 
 // GetAWSError strips and returns the error string
-func GetAWSError(action string, err error) string {
-	extractedErrorStrings := strings.Split(err.Error(), ":")
-	return extractedErrorStrings[0]
+func GetAWSError(err error) (string, string) {
+	errorStrings := strings.Split(err.Error(), ":")
+	return errorStrings[0], errorStrings[1]
 }

@@ -96,7 +96,7 @@ func listGroups() {
 		}
 
 		if err != nil {
-			lib.HandleAWSError("listing groups", err)
+			lib.HandleAWSError("listing groups", err, true)
 		}
 
 		if groups.NextToken == nil || !getall {

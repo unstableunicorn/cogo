@@ -179,7 +179,7 @@ func createUser(userInput *cognito.AdminCreateUserInput) {
 		if updateUserIfExists {
 			fmt.Println("Need to handle updating a user")
 		} else {
-			lib.HandleAWSError("creating user", err)
+			lib.HandleAWSError("creating user", err, true)
 		}
 	} else {
 		fmt.Println(user.GoString())

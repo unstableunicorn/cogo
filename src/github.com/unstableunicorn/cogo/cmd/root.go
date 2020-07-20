@@ -26,6 +26,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/unstableunicorn/cogo/lib"
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	cognito "github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
@@ -78,6 +79,16 @@ var rootCmd = &cobra.Command{
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
+	// Get args from pipe and append to existing args
+	pipedArgs, _ := lib.GetArgsFromStdin()
+	if len(pipedArgs) > 0 {
+		allArgs := os.Args[1:]
+		for _, arg := range pipedArgs {
+			allArgs = append(allArgs, arg)
+		}
+		rootCmd.SetArgs(allArgs)
+	}
+
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)

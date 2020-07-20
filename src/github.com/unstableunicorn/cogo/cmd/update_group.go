@@ -91,7 +91,7 @@ func updateGroup(groupInput *cognito.UpdateGroupInput) {
 			cg := cognito.CreateGroupInput(*groupInput)
 			createGroup(&cg)
 		} else {
-			lib.HandleAWSError("updating group", err)
+			lib.HandleAWSError("updating group", err, true)
 		}
 
 	} else {

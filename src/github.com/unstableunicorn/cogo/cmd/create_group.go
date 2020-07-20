@@ -94,7 +94,7 @@ func createGroup(groupInput *cognito.CreateGroupInput) {
 			ug := cognito.UpdateGroupInput(*groupInput)
 			updateGroup(&ug)
 		} else {
-			lib.HandleAWSError("creating group", err)
+			lib.HandleAWSError("creating group", err, true)
 		}
 	} else {
 		fmt.Println(group.GoString())

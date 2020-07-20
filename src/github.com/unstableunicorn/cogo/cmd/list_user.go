@@ -148,7 +148,7 @@ func listUsers() {
 		}
 
 		if err != nil {
-			lib.HandleAWSError("listing users", err)
+			lib.HandleAWSError("listing users", err, true)
 		}
 
 		if users.PaginationToken == nil || !getall {

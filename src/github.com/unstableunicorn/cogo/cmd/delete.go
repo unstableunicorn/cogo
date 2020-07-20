@@ -27,6 +27,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var stopDeleteOnError bool
+
 // deleteCmd represents the delete command
 var deleteCmd = &cobra.Command{
 	Use:   "delete",
@@ -38,7 +40,11 @@ var deleteCmd = &cobra.Command{
 	>cogo -p <poolid> delete user Username
 
 	Delete a group:
-	>cogo -p <poolid> delete group Groupname`,
+	>cogo -p <poolid> delete group Groupname
+	
+	Delete multiple users and fail on first error:
+	>cogo -p <poolid> delete user -e user1name user2name`,
+
 	Aliases: []string{"del", "remove", "rem"},
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("delete called")
@@ -47,4 +53,5 @@ var deleteCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(deleteCmd)
+	deleteCmd.PersistentFlags().BoolVarP(&stopDeleteOnError, "stoponerror", "e", false, "Will stop deleting users or groups on first error")
 }

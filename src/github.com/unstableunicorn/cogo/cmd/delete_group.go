@@ -1,4 +1,4 @@
-/*Package cmd functions for delete user commands.
+/*Package cmd functions for delete group commands.
 Copyright © 2020 Elric Hindy <anunstableunicorn@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,22 +31,22 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// deleteUserCmd represents the user command
-var deleteUserCmd = &cobra.Command{
-	Use:   "user",
-	Short: "Delete an AWS Cognito user",
-	Long: `Delete an AWS Cognito user, takes the user name(s)
+// deleteGroupCmd represents the user command
+var deleteGroupCmd = &cobra.Command{
+	Use:   "group",
+	Short: "Delete an AWS Cognito group",
+	Long: `Delete an AWS Cognito group, takes the group name(s)
   as an input.
 
   Example:
-  Delete one user:
-  >cogo -p <poolid> delete user Username
+  Delete one group:
+  >cogo -p <poolid> delete group Groupname
 
-  Delete multiple users:
-  >cogo -p <poolid> delete user user1name user2name
+  Delete multiple groups:
+  >cogo -p <poolid> delete group group1name group2name group3name
   `,
 
-	Aliases: userAliases,
+	Aliases: groupAliases,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) < 1 {
 			s := fmt.Sprintf("At least one value is required for the user name, provided values: '%v'", args)
@@ -55,28 +55,27 @@ var deleteUserCmd = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		deleteUser(args)
+		deleteGroup(args)
 	},
 }
 
 func init() {
-	deleteCmd.AddCommand(deleteUserCmd)
+	deleteCmd.AddCommand(deleteGroupCmd)
 }
 
-func deleteUser(usernames []string) {
-	deleteUserInput := &cognito.AdminDeleteUserInput{
+func deleteGroup(groups []string) {
+	deleteGroupInput := &cognito.DeleteGroupInput{
 		UserPoolId: &poolID,
 	}
 
-	for _, username := range usernames {
-		deleteUserInput.SetUsername(username)
-
-		_, err := cognitoSvc.AdminDeleteUser(deleteUserInput)
+	for _, groupname := range groups {
+		deleteGroupInput.SetGroupName(groupname)
+		_, err := cognitoSvc.DeleteGroup(deleteGroupInput)
 		if err != nil {
-			s := fmt.Sprintf("deleting user %v", username)
+			s := fmt.Sprintf("deleting group %v", groupname)
 			lib.HandleAWSError(s, err, stopDeleteOnError)
 		} else {
-			fmt.Println("Successfully deleted: ", username)
+			fmt.Println("Successfully deleted: ", groupname)
 		}
 	}
 }
