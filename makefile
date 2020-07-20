@@ -20,7 +20,7 @@ test:
 	@go test -short ${PKG_LIST}
 
 getmodules:
-	go get -v -t -d ./...
+	go mod download
 
 vet:
 	@go vet ${PKG_LIST}
