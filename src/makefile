@@ -11,13 +11,16 @@ all: run
 buildlocal: 
 	go build -i -v -o bin/${OUT} -ldflags="-X ${VERSION_PATH}=${VERSION}" ${PKG}
 
-build: buildlocal
+build: static
 	GOOS=darwin GOARCH=amd64 go build -i -v -o bin/${OUT}-darwin-amd64 -ldflags="-X ${VERSION_PATH}=${VERSION}" ${PKG}
 	GOOS=linux GOARCH=amd64 go build -i -v -o bin/${OUT}-linux-amd64 -ldflags="-X ${VERSION_PATH}=${VERSION}" ${PKG}
 	GOOS=windows GOARCH=amd64 go build -i -v -o bin/${OUT}-windows-amd64 -ldflags="-X ${VERSION_PATH}=${VERSION}" ${PKG}
 
 test:
 	@go test -short ${PKG_LIST}
+
+getmodules:
+	go get -v -t -d ${PKG}
 
 vet:
 	@go vet ${PKG_LIST}
