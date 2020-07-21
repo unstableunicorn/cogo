@@ -3,12 +3,30 @@ CoGo is a cli utility for managing cognito users and groups written in Go.
 This is mainly a side project to learn go and is my first go project.
 
 ## Installation
-I'll do the whole release thing soon but hopefully you just curl your version:
+You can curl your required release like this:
+### Linux
+Use the cogo-linux-amd64 package:
 ```
-curl TODO
+https://github.com/unstableunicorn/cogo/releases/download/v0.1.0/cogo-linux-amd64 -o /usr/local/bin/cogo
+sudo chmod +x /usr/local/bin/cogo
+cogo --help
+```
+### MacOs
+Use the cogo-darwin-amd64
+```
+https://github.com/unstableunicorn/cogo/releases/download/v0.1.0/cogo-darwin-amd64 -o /usr/local/bin/cogo
+sudo chmod +x /usr/local/bin/cogo
+cogo --help
+```
+### MacOs
+Use the cogo-windows-amd64.exe:
+Note you can add it to another folder e.g. 'C:\Program Files\Cogo\cogo.exe' and add it to your windows path so you  don't need to type the full path to the application.
+```
+https://github.com/unstableunicorn/cogo/releases/download/v0.1.0/cogo-windows-amd64.exe -o "C:\Cogo\cogo.exe"
+C:\Cogo\cogo.exe --help
 ```
 
-Alternatively you can use the Docker images now:
+Alternatively you can use the Docker images:
 ```
 docker run -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} -e AWS_DEFAULT_REGION=us-west-2 unstableunicorn/cogo -p <poolid> list users
 ```
@@ -68,4 +86,4 @@ Flags:
 Use "cogo [command] --help" for more information about a command.
 ```
 
-Lets leave it there for now
+Lets leave it there for now, more to come later
