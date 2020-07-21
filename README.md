@@ -18,7 +18,7 @@ https://github.com/unstableunicorn/cogo/releases/download/v0.1.0/cogo-darwin-amd
 sudo chmod +x /usr/local/bin/cogo
 cogo --help
 ```
-### MacOs
+### Windows
 Use the cogo-windows-amd64.exe:
 Note you can add it to another folder e.g. 'C:\Program Files\Cogo\cogo.exe' and add it to your windows path so you  don't need to type the full path to the application.
 ```
